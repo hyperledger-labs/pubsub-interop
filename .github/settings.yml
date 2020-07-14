@@ -1,0 +1,19 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+repository:
+  name: pubsub-interop
+  description: A blockchain interoperability solution for permissioned
+               blockchain networks based on a publish/subscribe pattern.
+  homepage: https://wiki.hyperledger.org/display/labs
+  default_branch: default
+  has_downloads: false
+  has_issues: true
+  has_projects: false
+  has_wiki: false
+  archived: false
+  private: false
+  allow_squash_merge: true
+  allow_merge_commit: false
+  allow_rebase_merge: true
