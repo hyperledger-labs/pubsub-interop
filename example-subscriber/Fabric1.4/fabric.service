@@ -1,0 +1,15 @@
+[Unit]
+Description=Fabric service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=ubuntu
+WorkingDirectory=/home/ubuntu/MSc_Research_Fabric
+ExecStart=/home/ubuntu/MSc_Research_Fabric/runApp.sh
+
+[Install]
+WantedBy=multi-user.target
