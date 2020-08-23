@@ -113,10 +113,10 @@ class Broker extends Contract {
             let subBCID = topic.subscribers[i]
             let arg = ["queryBlockchain", subBCID]
 
-            console.log("Right before calling the blockchains chaincode")
+            console.log("Right before calling the pubsub chaincode")
 
             // Get the information for each subscriber from the blockchains chaincode.
-            let response = await ctx.stub.invokeChaincode('blockchains', arg, "mychannel")
+            let response = await ctx.stub.invokeChaincode('pubsub', arg, "mychannel")
             let subBC = JSON.parse(response.payload.toString())
 
             if (subBC.type === 'Fabric'){

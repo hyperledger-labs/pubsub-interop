@@ -7,7 +7,7 @@ and how we can connect to them.
 
 const { Contract } = require('fabric-contract-api');
 
-class Blockchains extends Contract {
+class Pubsub extends Contract {
 
     // Initialize the blockchains chaincode with an example blockchain. 
     async initLedger(ctx) {
@@ -123,4 +123,4 @@ class Blockchains extends Contract {
 
 }
 
-module.exports = Blockchains;
+module.exports = Pubsub;
