@@ -129,7 +129,6 @@ class Broker extends Contract {
              else if (subBC.type === 'Besu') {
                 updateBesuTopic('', '0', newMessage)
             }
-           
         }
         
         console.info('============= END : Publish to a Topic ===========');
