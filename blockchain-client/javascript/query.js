@@ -37,7 +37,7 @@ async function main() {
 
         // Get the contract from the network.
         const brokerContract = network.getContract('broker');
-        const blockchainsContract = network.getContract('blockchains');
+        const blockchainsContract = network.getContract('pubsub');
 
         // Evaluate the specified transaction.
         // queryTopic transaction - requires 1 argument, ex: ('queryTopic', 'CAR4')
