@@ -9,6 +9,10 @@ const { Contract } = require('fabric-contract-api');
 
 const axios = require('axios');
 
+var Web3 = require('web3');
+const fs = require('fs');
+const PrivateKeyProvider = require("@truffle/hdwallet-provider");
+
 class Broker extends Contract {
 
     // Initialize the chaincode with an example topic.
@@ -18,7 +22,7 @@ class Broker extends Contract {
             {
                 name: 'temp-topic',
                 publisher: 'Sara-pub',
-                subscribers: ['BLOCKCHAIN0'],
+                subscribers: ['BLOCKCHAIN0', 'BLOCKCHAIN1'],
                 message: ''
             },
         ];
@@ -109,17 +113,22 @@ class Broker extends Contract {
             let subBCID = topic.subscribers[i]
             let arg = ["queryBlockchain", subBCID]
 
-            console.log("Right before calling the blockchains chaincode")
+            console.log("Right before calling the pubsub chaincode")
 
             // Get the information for each subscriber from the blockchains chaincode.
-            let response = await ctx.stub.invokeChaincode('blockchains', arg, "mychannel")
+            let response = await ctx.stub.invokeChaincode('pubsub', arg, "mychannel")
             let subBC = JSON.parse(response.payload.toString())
 
-            const registerUrl = `http://${subBC.server}:${subBC.port}${subBC.registerUserPath}`
-            const registerResp = await registerUser(registerUrl, subBC.user, subBC.org)
-
-            const updateUrl = `http://${subBC.server}:${subBC.port}${subBC.invokePath}`
-            console.log(await updateTopic(updateUrl, registerResp.token, topicNumber, newMessage)) // Invoke the subscriber's connector smart contract.
+            if (subBC.type === 'Fabric'){
+                const registerUrl = `http://${subBC.server}:${subBC.port}${subBC.registerUserPath}`
+                const registerResp = await registerUser(registerUrl, subBC.user, subBC.org)
+    
+                const updateUrl = `http://${subBC.server}:${subBC.port}${subBC.invokePath}`
+                console.log(await updateTopic(updateUrl, registerResp.token, topicNumber, newMessage)) // Invoke the subscriber's connector smart contract.
+            } 
+             else if (subBC.type === 'Besu') {
+                updateBesuTopic('', '0', newMessage)
+            }
         }
         
         console.info('============= END : Publish to a Topic ===========');
@@ -166,5 +175,130 @@ const updateTopic = async (url, token, topic_id, message) => {
     return response.data
 }
 
+const updateBesuTopic = (url, id, message) => {
+    // insert the private key of the account used in metamask eg: Account 1 (Miner Coinbase Account)
+    const privateKey = "c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3";
 
+    const web3Provider = new PrivateKeyProvider(privateKey, "http://162.246.156.104:8545")
+
+    // web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
+    var web3 = new Web3(web3Provider);
+
+
+    // let AdoptionArtifact = JSON.parse(fs.readFileSync('./Topics.json'))
+    // const abi = AdoptionArtifact['abi']
+    // const address = AdoptionArtifact['networks']['2018']['address'] 
+    const abi = [
+        {
+          "inputs": [],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "constant": true,
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "name": "all_topics",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "exists",
+              "type": "bool"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "message",
+              "type": "string"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "message",
+              "type": "string"
+            }
+          ],
+          "name": "newTopic",
+          "outputs": [],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "message",
+              "type": "string"
+            }
+          ],
+          "name": "updateTopic",
+          "outputs": [],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    
+    const address = "0x345cA3e014Aaf5dcA488057592ee47305D9B3e10"
+    var MyContract = new web3.eth.Contract(abi, address)
+    MyContract.setProvider(web3Provider)
+
+    return new Promise((resolve, reject) => {
+        web3.eth.getAccounts(async (error, accounts) => {
+            if (error) {
+                console.log("error");
+            }
+
+            var account = accounts[0];
+            try{
+                let results = await MyContract.methods.all_topics(id).call()
+                if (results['2'] === message){
+                    console.log("Already updated!")
+                } else {
+                    let result = await MyContract.methods.updateTopic(id, message).send({from: account})
+                    if (result){
+                        console.log("Topic updated successfully.")
+                    }
+                }
+            } catch(e) {
+                console.log("Caught an error!!", e)
+            }  
+            resolve()
+        }) 
+    })
+}
 module.exports = Broker;

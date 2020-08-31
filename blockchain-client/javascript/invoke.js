@@ -36,7 +36,7 @@ async function main() {
 
         // Get the contract from the network.
         const brokerContract = network.getContract('broker');
-        const blockchainContract = network.getContract('blockchains');
+        const blockchainContract = network.getContract('pubsub');
 
         // Submit the specified transaction.
         // createCar transaction - requires 5 argument, ex: ('createCar', 'CAR12', 'Honda', 'Accord', 'Black', 'Tom')

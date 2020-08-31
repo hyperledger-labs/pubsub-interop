@@ -7,7 +7,7 @@ and how we can connect to them.
 
 const { Contract } = require('fabric-contract-api');
 
-class Blockchains extends Contract {
+class Pubsub extends Contract {
 
     // Initialize the blockchains chaincode with an example blockchain. 
     async initLedger(ctx) {
@@ -17,6 +17,7 @@ class Blockchains extends Contract {
         const blockchains = [
             {
                 name: 'Sara-Subscriber',
+                type: 'Fabric',
                 server: '192.168.226.9',
                 port: '8880',
                 channelName,
@@ -33,6 +34,24 @@ class Blockchains extends Contract {
                 org: 'Org1'
 
             },
+            {
+                name: 'Besu-Subscriber',
+                type: 'Besu',
+                server: '162.246.156.104',
+                port: '8545',
+                channelName,
+                topicsChaincode,
+                topicsPath: './artifacts/src/topics',
+                registerUserPath: '/users',
+                invokePath: `/channels/${channelName}/chaincodes/${topicsChaincode}`,
+                updateTopicFunc: {
+                    "peers": ["peer0.org1.example.com","peer0.org2.example.com"], 
+                    "fcn":"updateTopic",
+                    "args":["topic_id", "message"]
+                },
+                user: 'pubsub',
+                org: 'Org1'
+            }
         ];
 
         for (let i = 0; i < blockchains.length; i++) {
@@ -56,7 +75,7 @@ class Blockchains extends Contract {
     }
 
     // Create a new blockchain entry and put it on the ledger.
-    async createBlockchain(ctx, blockchainNumber, name, server, port, channelName, topicsChaincode, topicsPath, registerUserPath, 
+    async createBlockchain(ctx, blockchainNumber, name, type, server, port, channelName, topicsChaincode, topicsPath, registerUserPath, 
         invokePath, updateTopicFunc, user, org) { 
 
         console.info('============= START : Create Blockchain ===========');
@@ -64,6 +83,7 @@ class Blockchains extends Contract {
         const blockchain = {
             docType: 'blockchain',
             name,
+            type,
             server,
             port,
             channelName,
@@ -103,4 +123,4 @@ class Blockchains extends Contract {
 
 }
 
-module.exports = Blockchains;
+module.exports = Pubsub;
