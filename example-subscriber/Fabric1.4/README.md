@@ -1,4 +1,4 @@
-# ChainFaaS Blockchain Network (Hyperledger Fabric)
+# Hyperledger Fabric v1.4 example subscriber
 
 ### Prerequisites and setup:
 
@@ -9,21 +9,7 @@
 
 To install all the prerequisites, run the setup.sh script.
 
-**Note:** Since docker containers can get big in HF, if you want to run docker on a hard disk other than the default one, run the following command with the path on which the hard drive is mounted on. 
-
-``` bash
-sudo systemctl stop docker
-
-echo '
-{
-  "graph":"/mnt/docker"
-}
-' | sudo tee /etc/docker/daemon.json
-
-sudo systemctl start docker
-```
-
 ### Start the network
 
-To start the network, run the runApp.sh script.
+To start the network, run the runApp.sh script. Before using the network, a new user should be created for each organization. Then a cannel should be created and both organization should join the channel. Finally, the chaincode should be installed and instantiated. You can run the client.py file to make all these happen. 
 
