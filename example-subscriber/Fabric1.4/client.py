@@ -141,8 +141,8 @@ def initialize_network():
     return token1, token2
 
 if __name__ == "__main__":
-    username = sys.argv[1]
-    org = sys.argv[2]
+    # username = sys.argv[1]
+    # org = sys.argv[2]
     orgLower = org.lower()
     channelName = "mychannel"
 
