@@ -23,3 +23,11 @@ Before using the network, you need to enroll an admin user and register a second
 node ./blockchain-client/javascript/enrollAdmin.js
 node ./blockchain-client/javascript/registerUser.js
 ```
+
+## Stopping the network
+
+Use the following command to stop and delete the broker network.
+
+```bash
+node ./blockchain-client/networkDown.sh
+```

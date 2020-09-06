@@ -21,3 +21,7 @@ To run these tutorials, you must have the following installed:
 ## Start the network
 
 To start the network, run the run.sh file and then the run-daap.sh file. To learn more about Hyperledger Besu, visit [their repo](https://github.com/hyperledger/besu). 
+
+## Stop and remove the network
+
+To stop the network, run the stop.sh file and to remove the network, run the remove.sh file.

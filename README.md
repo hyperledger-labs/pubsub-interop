@@ -30,7 +30,11 @@ Before using the network, you need to enroll an admin user and register a second
 node ./blockchain-client/javascript/enrollAdmin.js
 node ./blockchain-client/javascript/registerUser.js
 ```
+Use the following command to stop and delete the broker network.
 
+```bash
+node ./blockchain-client/networkDown.sh
+```
 ## Subscriber Networks
 
 Two example subscriber networks can be found under [example-subscriber](./example-subscriber). Details on how to run and implement each of these networks can be found in their documentations. The following are the steps that should be followed for each new subscriber blockchain. 
