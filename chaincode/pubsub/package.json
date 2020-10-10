@@ -1,7 +1,7 @@
 {
-    "name": "fabcar",
+    "name": "pubsub",
     "version": "1.0.0",
-    "description": "FabCar contract implemented in JavaScript",
+    "description": "Pubsub contract implemented in JavaScript",
     "main": "index.js",
     "engines": {
         "node": ">=8",

@@ -1,7 +1,7 @@
 {
-    "name": "pubsub-interop",
+    "name": "broker",
     "version": "1.0.0",
-    "description": "Pubsub interop contract implemented in JavaScript",
+    "description": "Broker contract implemented in JavaScript",
     "main": "index.js",
     "engines": {
         "node": ">=8",

@@ -1,0 +1,29 @@
+test:
+  name: my-asset-benchmark
+  description: test benchmark
+  workers:
+    type: local
+    number: 5
+  rounds:
+
+    - label: subscribeToTopic
+      description: Subscribe to topic benchmark
+      chaincodeId: broker
+      callback: benchmarks/callbacks/broker/subscribeToTopic.js
+
+      txNumber: 500     
+     
+      rateControl: 
+        type: fixed-rate
+        opts:
+          tps: 500
+      arguments: 
+        assets: 5000
+
+monitor:
+  type:
+    - none
+
+observer:
+  type: local
+  interval: 5

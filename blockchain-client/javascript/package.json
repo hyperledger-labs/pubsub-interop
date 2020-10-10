@@ -18,7 +18,7 @@
         "cors": "^2.8.5",
         "express": "^4.17.1",
         "fabric-ca-client": "^2.1.0",
-        "fabric-network": "^2.1.0",
+        "fabric-network": "1.4.8",
         "fs": "0.0.1-security",
         "http": "0.0.1-security",
         "log4js": "^6.3.0",
