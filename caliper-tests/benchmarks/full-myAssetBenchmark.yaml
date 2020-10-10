@@ -1,0 +1,82 @@
+test:
+  name: my-asset-benchmark
+  description: test benchmark
+  workers:
+    type: local
+    number: 3
+  rounds:
+    - label: queryTopic
+      description: Query topic benchmark
+      chaincodeId: broker
+      callback: benchmarks/callbacks/broker/queryTopic.js
+      txNumber: &num 1000
+      rateControl: &rateControl
+        type: fixed-rate
+        opts:
+          tps: 100
+      arguments: &args
+        assets: 5000
+
+    - label: subscribeToTopic
+      description: Subscribe to topic benchmark
+      chaincodeId: broker
+      callback: benchmarks/callbacks/broker/subscribeToTopic.js
+      txNumber: *num
+      rateControl: *rateControl
+      arguments: *args
+      
+    - label: queryAllTopics
+      description: Query all topics benchmark
+      chaincodeId: broker
+      callback: benchmarks/callbacks/broker/queryAllTopics.js
+      txNumber: *num
+      rateControl: *rateControl
+      arguments: *args
+    
+    - label: publishToTopic
+      description: Publish to topic benchmark
+      chaincodeId: broker
+      callback: benchmarks/callbacks/broker/publishToTopic.js
+      txNumber: *num
+      rateControl: *rateControl
+      arguments: *args
+
+    - label: createTopic
+      description: Create topic benchmark
+      chaincodeId: broker
+      callback: benchmarks/callbacks/broker/createTopic.js
+      txNumber: *num
+      rateControl: *rateControl
+      arguments: *args
+
+    - label: queryBlockchain
+      description: Query blockchain benchmark
+      chaincodeId: pubsub
+      callback: benchmarks/callbacks/pubsub/queryBlockchain.js
+      txNumber: *num
+      rateControl: *rateControl
+      arguments: *args
+
+    - label: queryAllBlockchains
+      description: Query all blockchains benchmark
+      chaincodeId: pubsub
+      callback: benchmarks/callbacks/pubsub/queryAllBlockchains.js
+      txNumber: *num
+      rateControl: *rateControl
+      arguments: *args
+
+    - label: createBlockchain
+      description: Create a blockchain benchmark
+      chaincodeId: pubsub
+      callback: benchmarks/callbacks/pubsub/createBlockchain.js
+      txNumber: *num
+      rateControl: *rateControl
+      arguments: *args
+
+monitor:
+  type:
+    - none
+
+observer:
+  type: local
+  interval: 5

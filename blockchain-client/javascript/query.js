@@ -4,7 +4,8 @@
 
 'use strict';
 
-const { Gateway, Wallets } = require('fabric-network');
+// const { Gateway, Wallets } = require('fabric-network');
+const {FileSystemWallet, Gateway} = require('fabric-network');
 const path = require('path');
 const fs = require('fs');
 
@@ -17,11 +18,12 @@ async function main() {
 
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
-        const wallet = await Wallets.newFileSystemWallet(walletPath);
+        // const wallet = await Wallets.newFileSystemWallet(walletPath);
+        const wallet = new FileSystemWallet(walletPath)
         console.log(`Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
-        const identity = await wallet.get('appUser');
+        const identity = await wallet.exists('appUser');
         if (!identity) {
             console.log('An identity for the user "appUser" does not exist in the wallet');
             console.log('Run the registerUser.js application before retrying');
