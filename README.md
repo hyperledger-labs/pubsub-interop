@@ -9,31 +9,31 @@ To enable interoperability between two networks, you first need to run the broke
 
 ## Broker network
 
-The broker is a Hyperledger Fabric V2.o network. To run the broker blockchain test network, you first need to install the [Fabric Prerequisites](https://hyperledger-fabric.readthedocs.io/en/master/prereqs.html) as well as [the Fabric samples, binaries and Docker images](https://hyperledger-fabric.readthedocs.io/en/master/install.html).
+The broker is a Hyperledger Fabric V2.0 network. To run the broker blockchain test network, you first need to install the [Fabric Prerequisites](https://hyperledger-fabric.readthedocs.io/en/master/prereqs.html) as well as [the Fabric samples, binaries and Docker images](https://hyperledger-fabric.readthedocs.io/en/master/install.html).
 
 The next step is to clone the current repository and go into the directory: 
 
 ``` bash
 git clone https://github.com/hyperledger-labs/pubsub-interop
-cd pubsub-interop/
+cd pubsub-interop/blockchain-client
 ```
 
 Then you can start the test network by running the following command:
 
 ```bash
-node ./blockchain-client/startFabric.sh javascript
+sudo ./startFabric.sh javascript
 ```
 
 Before using the network, you need to enroll an admin user and register a second user in the network. 
 
 ```bash
-node ./blockchain-client/javascript/enrollAdmin.js
-node ./blockchain-client/javascript/registerUser.js
+node ./javascript/enrollAdmin.js
+node ./javascript/registerUser.js
 ```
 Use the following command to stop and delete the broker network.
 
 ```bash
-node ./blockchain-client/networkDown.sh
+sudo ./networkDown.sh
 ```
 ## Subscriber Networks
 
