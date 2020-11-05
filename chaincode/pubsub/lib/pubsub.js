@@ -18,7 +18,7 @@ class Pubsub extends Contract {
             {
                 name: 'Sara-Subscriber',
                 type: 'Fabric',
-                server: '192.168.226.9',
+                server: '192.168.226.108',
                 port: '8880',
                 info: {
                     channelName,
@@ -35,7 +35,7 @@ class Pubsub extends Contract {
             {
                 name: 'Besu-Subscriber',
                 type: 'Besu',
-                server: '192.168.226.38',
+                server: '192.168.226.119',
                 port: '8545',
                 info: {
                     privateKey: "c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3",

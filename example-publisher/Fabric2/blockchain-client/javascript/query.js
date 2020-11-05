@@ -39,11 +39,13 @@ async function main() {
         const topicsContract = network.getContract('topics');
 
         // Evaluate the specified transaction.
-        // queryTopic transaction - requires 1 argument, ex: ('queryTopic', 'CAR4')
+        // queryTopic transaction - requires 1 argument, ex: ('queryTopic', '0')
         // queryAllTopics transaction - requires no arguments, ex: ('queryAllTopics')
-        const topicsResult = await topicsContract.evaluateTransaction('queryAllTopics');
-        // const blockchainsResult = await blockchainsContract.evaluateTransaction('queryBlockchain', 'BLOCKCHAIN0');
-        console.log(`Transaction has been evaluated, result is: ${topicsResult.toString()}`);
+        
+        const topicsResult1 = await topicsContract.evaluateTransaction('queryTopic', '0');
+        const topicsResult2 = await topicsContract.evaluateTransaction('queryAllTopics');
+        console.log(`Transaction has been evaluated, result is: ${topicsResult1.toString()}`);
+        console.log(`Transaction has been evaluated, result is: ${topicsResult2.toString()}`);
 
     } catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);

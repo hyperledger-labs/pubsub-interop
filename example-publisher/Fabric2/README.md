@@ -2,7 +2,7 @@
 
 ## Running the network
 
-To run the broker blockchain test network, you first need to install the [Fabric Prerequisites](https://hyperledger-fabric.readthedocs.io/en/master/prereqs.html) as well as [the Fabric samples, binaries and Docker images](https://hyperledger-fabric.readthedocs.io/en/master/install.html).
+To run the broker blockchain test network, you need to have the [Fabric Prerequisites](https://hyperledger-fabric.readthedocs.io/en/master/prereqs.html) installed as well as [the Fabric samples, binaries and Docker images](https://hyperledger-fabric.readthedocs.io/en/master/install.html). Make sure the fabric binaries and configuration files are in the folder that holds the network files.
 
 The next step is to clone the current repository and go into the directory: 
 
@@ -14,14 +14,17 @@ cd pubsub-interop/example-publisher/Fabric2
 Then you can start the test network by running the following command:
 
 ```bash
-node ./blockchain-client/startFabric.sh javascript
+cd blockchain-client
+sudo ./startFabric.sh javascript
 ```
 
 Before using the network, you need to enroll an admin user and register a second user in the network. 
 
 ```bash
-node ./blockchain-client/javascript/enrollAdmin.js
-node ./blockchain-client/javascript/registerUser.js
+cd javascript
+npm i 
+node ./enrollAdmin.js
+node ./registerUser.js
 ```
 
 ## Stopping the network
@@ -29,5 +32,5 @@ node ./blockchain-client/javascript/registerUser.js
 Use the following command to stop and delete the broker network.
 
 ```bash
-node ./blockchain-client/networkDown.sh
+sudo ./blockchain-client/networkDown.sh
 ```

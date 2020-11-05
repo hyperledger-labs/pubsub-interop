@@ -7,7 +7,8 @@ var bodyParser = require('body-parser')
 var cors = require('cors')
 const path = require('path')
 const fs = require('fs')
-const { Gateway, Wallets } = require('fabric-network')
+
+const { Gateway, FileSystemWallet } = require('fabric-network')
 const FabricCAServices = require('fabric-ca-client')
 
 logger.level = 'debug'
@@ -22,6 +23,13 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
 	extended: false
 }))
+
+// load the network configuration
+const ccpPath = path.resolve(__dirname, '..', '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
+const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
+
+// Create a new file system based wallet for managing identities.
+const walletPath = path.join(process.cwd(), 'wallet');
 
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// START SERVER /////////////////////////////////
@@ -67,18 +75,18 @@ app.post('/users', async function(req, res) {
 
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet')
-        const wallet = await Wallets.newFileSystemWallet(walletPath)
+        const wallet = new FileSystemWallet(walletPath)
         console.log(`Wallet path: ${walletPath}`)
 
         // Check to see if we've already enrolled the user.
-        const userIdentity = await wallet.get(username)
+        const userIdentity = await wallet.exists('username');
         if (userIdentity) {
             console.log(`An identity for the user ${username} already exists in the wallet`)
             return
         }
 
         // Check to see if we've already enrolled the admin user.
-        const adminIdentity = await wallet.get('admin')
+        const adminIdentity = await wallet.exists('admin');
         if (!adminIdentity) {
             console.log('An identity for the admin user "admin" does not exist in the wallet')
             return
@@ -152,17 +160,8 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function(req, 
 	logger.debug(args);
 
 	try {
-        // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
-        const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
-
-        // Create a new file system based wallet for managing identities.
-        const walletPath = path.join(process.cwd(), 'wallet');
-        const wallet = await Wallets.newFileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
-
         // Check to see if we've already enrolled the user.
-        const identity = await wallet.get('appUser');
+        const identity = await wallet.exists('appUser');
         if (!identity) {
             console.log('An identity for the user "appUser" does not exist in the wallet');
             console.log('Run the registerUser.js application before retrying');
@@ -180,8 +179,6 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function(req, 
         const contract = network.getContract(chaincodeName);
 
         // Evaluate the specified transaction.
-        // queryTopic transaction - requires 1 argument, ex: ('queryTopic', 'CAR4')
-        // queryAllTopics transaction - requires no arguments, ex: ('queryAllTopics')
         const result = await contract.evaluateTransaction(fcn);
 
 		console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
@@ -191,9 +188,6 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function(req, 
         console.error(`Failed to evaluate transaction: ${error}`);
         res.send(`Failed to evaluate transaction: ${error}`)
     }
-
-	// let message = await query.queryChaincode(peer, channelName, chaincodeName, args, fcn, req.username, req.orgname);
-	// res.send(message);
 });
 
 
@@ -227,17 +221,8 @@ app.post('/channels/:channelName/chaincodes/:chaincodeName', async function(req,
 	}
 
 	try {
-        // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
-        let ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
-
-        // Create a new file system based wallet for managing identities.
-        const walletPath = path.join(process.cwd(), 'wallet');
-        const wallet = await Wallets.newFileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
-
         // Check to see if we've already enrolled the user.
-        const identity = await wallet.get('appUser');
+        const identity = await wallet.exists('appUser');
         if (!identity) {
             console.log('An identity for the user "appUser" does not exist in the wallet');
             console.log('Run the registerUser.js application before retrying');
@@ -254,8 +239,14 @@ app.post('/channels/:channelName/chaincodes/:chaincodeName', async function(req,
         // Get the contract from the network.
         const contract = network.getContract(chaincodeName);
 
-		// Submit the specified transaction.
-        await contract.submitTransaction(fcn, args[0], args[1]);
+        // Submit the specified transaction.
+        if (fcn === 'createTopic'){
+            await contract.submitTransaction(fcn, args[0], args[1], args[2], args[3], args[4]);
+        } else if (fcn === 'publishToTopic'){
+            await contract.submitTransaction(fcn, args[0], args[1]);
+        } else if (fcn === 'subscribeToTopic'){
+            await contract.submitTransaction(fcn, args[0], args[1]);
+        }
         console.log('Transaction has been submitted');
 
         // Disconnect from the gateway.
@@ -266,7 +257,4 @@ app.post('/channels/:channelName/chaincodes/:chaincodeName', async function(req,
         console.error(`Failed to submit transaction: ${error}`);
         res.send(`Failed to submit transaction: ${error}`)
     }
-    
-	
-	// res.send(message);
 });

@@ -10,11 +10,13 @@ const { Contract } = require('fabric-contract-api');
 
 const axios = require('axios');
 
-const brokerServer = "192.168.226.29"
+//The following information should be updated 
+const brokerServer = "192.168.226.100"
 const brokerPort = "8880"
 const channelName = "mychannel"
 const chaincodeName = "broker"
 const brokerInvokePath = `/channels/${channelName}/chaincodes/${chaincodeName}`
+const publisher_id = "BLOCKCHAIN3"
 
 class Topics extends Contract {
 
@@ -30,7 +32,7 @@ class Topics extends Contract {
 
         for (let i = 0; i < topics.length; i++) {
             topics[i].docType = 'topic';
-            await ctx.stub.putState('TOPIC' + i, Buffer.from(JSON.stringify(topics[i])));
+            await ctx.stub.putState(`${i}`, Buffer.from(JSON.stringify(topics[i])));
             console.info('Added <--> ', topics[i]);
         }
         console.info('============= END : Initialize Ledger ===========');
@@ -47,18 +49,21 @@ class Topics extends Contract {
     }
 
     // Create a new topic and put it in the ledger.
-    async createTopic(ctx, topicNumber, name, publisher, subscribers, message) {
+    async createTopic(ctx, topicNumber, name, message) {
         console.info('============= START : Create Topic ===========');
 
         const topic = {
             docType: 'topic',
             name,
-            publisher,
-            subscribers: [subscribers],
             message,
         };
 
         await ctx.stub.putState(topicNumber, Buffer.from(JSON.stringify(topic)));
+
+        const name_broker = publisher_id + '_' + topicNumber
+
+        const updateUrl = `http://${brokerServer}:${brokerPort}${brokerInvokePath}`
+        console.log(await createBrokerTopic(updateUrl, name_broker, name, message))
         console.info('============= END : Create Topic ===========');
     }
 
@@ -95,9 +100,10 @@ class Topics extends Contract {
 
         await ctx.stub.putState(topicNumber, Buffer.from(JSON.stringify(topic)));
         
+        const name_broker = publisher_id + '_' + topicNumber
 
         const updateUrl = `http://${brokerServer}:${brokerPort}${brokerInvokePath}`
-        console.log(await updateTopic(updateUrl, topicNumber, newMessage))
+        console.log(await updateTopic(updateUrl, name_broker, newMessage))
         
         console.info('============= END : Publish to a Topic ===========');
     }
@@ -105,7 +111,27 @@ class Topics extends Contract {
 }
 
 // Invoke the broker's chaincode to update a topic.
-const updateTopic = async (url, topic_id, message) => {
+const createTopic = async (url, topic_id, name, message) => {
+    const publisher = publisher_id
+    const subscribers = ''
+    const headers = {
+        "content-type": "application/json",
+    }
+    const data = {
+        "fcn": "createTopic",
+        "args":[topic_id, name, publisher, subscribers, message]
+    }
+    let response = await axios({
+        method: 'post',
+        url,
+        headers,
+        data,
+      })
+    return response.data
+}
+
+// Invoke the broker's chaincode to update a topic.
+const updateBrokerTopic = async (url, topic_id, message) => {
     const headers = {
         "content-type": "application/json",
     }

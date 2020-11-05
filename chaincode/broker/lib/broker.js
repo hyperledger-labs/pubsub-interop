@@ -50,13 +50,25 @@ class Broker extends Contract {
     // Create a new topic with the provided information and put it on the ledger.
     async createTopic(ctx, topicNumber, name, publisher, subscribers, message) {
         console.info('============= START : Create Topic ===========');
-        const topic = {
-            docType: 'topic',
-            name,
-            publisher,
-            subscribers: [subscribers],
-            message,
-        };
+        var topic = {}
+        if(subscribers){
+            topic = {
+                docType: 'topic',
+                name,
+                publisher,
+                subscribers: [subscribers],
+                message,
+            };
+        } else {
+            topic = {
+                docType: 'topic',
+                name,
+                publisher,
+                subscribers: [],
+                message,
+            };
+        }
+        
 
         await ctx.stub.putState(topicNumber, Buffer.from(JSON.stringify(topic)));
         console.info('============= END : Create Topic ===========');
@@ -99,6 +111,42 @@ class Broker extends Contract {
         console.info('============= END : Subscribe to a Topic ===========');
     }
 
+    // Unsubscribe from a topic. The subscriber is removed from the list of subscribers for the topic.
+    async unsubscribeFromTopic(ctx, topicNumber, subscriber) {
+        console.info('============= START : Unsubscribe from a Topic ===========');
+
+        const topicAsBytes = await ctx.stub.getState(topicNumber); // get the topic from chaincode state
+        if (!topicAsBytes || topicAsBytes.length === 0) {
+            throw new Error(`${topicNumber} does not exist`);
+        }
+        const topic = JSON.parse(topicAsBytes.toString());
+        topic.subscribers = topic.subscribers.filter(i => i !== subscriber);
+
+        await ctx.stub.putState(topicNumber, Buffer.from(JSON.stringify(topic)));
+        console.info('============= END : Unsubscribe from a Topic ===========');
+    }
+
+    // Unsubscribe from a topic. The subscriber is removed from the list of subscribers for the topic.
+    async unsubscribeFromAllTopics(ctx, subscriber) {
+        console.info('============= START : Unsubscribe from all Topics ===========');
+
+        const startKey = '';
+        const endKey = '';
+        for await (const {key, value} of ctx.stub.getStateByRange(startKey, endKey)) {
+            const strValue = Buffer.from(value).toString('utf8');
+            let record;
+            try {
+                record = JSON.parse(strValue);
+                record.subscribers = record.subscribers.filter(i => i !== subscriber);
+                await ctx.stub.putState(key, Buffer.from(JSON.stringify(record)));
+            } catch (err) {
+                console.log(err);
+                record = strValue;
+            }
+        }
+        console.info('============= END : Unsubscribe from all Topics ===========');
+    }
+
     // Publish to a topic by updating the message and notifying all subscribers.
     async publishToTopic(ctx, topicNumber, newMessage) {
         console.info('============= START : Publish to a Topic ===========');
@@ -127,18 +175,16 @@ class Broker extends Contract {
 
             if (subBC.type === 'Fabric'){
                 const registerUrl = `http://${subBC.server}:${subBC.port}${subBC.info.registerUserPath}`
-                console.log(registerUrl)
                 const registerResp = await registerUser(registerUrl, subBC.info.user, subBC.info.org)
-                console.log(registerResp)
+                
                 const updateUrl = `http://${subBC.server}:${subBC.port}${subBC.info.invokePath}`
-                console.log(updateUrl)
                 console.log(await updateTopic(updateUrl, registerResp.token, subBC.info.peers,  subBC.info.fcn, topicNumber, newMessage)) // Invoke the subscriber's connector smart contract.
             } 
              else if (subBC.type === 'Besu') {
                 let code = ''
-                let hasUnderScore = topicNumber.match(/(\d+)_(\d+)/)
+                let hasUnderScore = topicNumber.match(/.*(\d+)_(\d+)/)
                 if (!hasUnderScore) code = topicNumber.match(/\d+/)[0]
-                else code = hasUnderScore[1] + '_'.charCodeAt(0) + hasUnderScore[2]
+                else code = '1' + hasUnderScore[1] + hasUnderScore[2]
                 const url = `http://${subBC.server}:${subBC.port}`
                 updateBesuTopic(url, subBC.info.privateKey, subBC.info.address, subBC.info.abi, code, newMessage)
             }

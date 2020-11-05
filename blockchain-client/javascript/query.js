@@ -4,7 +4,7 @@
 
 'use strict';
 
-// const { Gateway, Wallets } = require('fabric-network');
+// Using fabric-network version 1.4.8 to which is the latest supported by Caliper
 const {FileSystemWallet, Gateway} = require('fabric-network');
 const path = require('path');
 const fs = require('fs');
@@ -18,7 +18,6 @@ async function main() {
 
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
-        // const wallet = await Wallets.newFileSystemWallet(walletPath);
         const wallet = new FileSystemWallet(walletPath)
         console.log(`Wallet path: ${walletPath}`);
 
@@ -41,14 +40,23 @@ async function main() {
         const brokerContract = network.getContract('broker');
         const blockchainsContract = network.getContract('pubsub');
 
-        // Evaluate the specified transaction.
-        // queryTopic transaction - requires 1 argument, ex: ('queryTopic', 'CAR4')
+        // Evaluate the specified transaction from broker contract.
+        // queryTopic transaction - requires 1 argument, ex: ('queryTopic', 'BLOCKCHAIN0_0')
         // queryAllTopics transaction - requires no arguments, ex: ('queryAllTopics')
-        const brokerResult = await brokerContract.evaluateTransaction('queryAllTopics');
-        const blockchainsResult = await blockchainsContract.evaluateTransaction('queryAllBlockchains');
-        // const blockchainsResult = await blockchainsContract.evaluateTransaction('queryBlockchain', 'BLOCKCHAIN0');
-        console.log(`Transaction has been evaluated, result is: ${brokerResult.toString()}`);
-        console.log(`Transaction has been evaluated, result is: ${blockchainsResult.toString()}`);
+
+        const brokerResult1 = await brokerContract.evaluateTransaction('queryTopic', 'BLOCKCHAIN0_0');
+        const brokerResult2 = await brokerContract.evaluateTransaction('queryAllTopics');
+
+        console.log(`Transaction has been evaluated, result is: ${brokerResult1.toString()}`);
+        console.log(`Transaction has been evaluated, result is: ${brokerResult2.toString()}`);
+
+        // Evaluate the specified transaction from pubsub contract.
+        // queryBlockchain transaction - requires 1 argument, ex: ('queryBlockchain', 'BLOCKCHAIN0')
+        // queryAllBlockchains transaction - requires no arguments, ex: ('queryAllBlockchains')
+        const blockchainsResult1 = await blockchainsContract.evaluateTransaction('queryBlockchain', 'BLOCKCHAIN0');
+        const blockchainsResult2 = await blockchainsContract.evaluateTransaction('queryAllBlockchains');
+        console.log(`Transaction has been evaluated, result is: ${blockchainsResult1.toString()}`);
+        console.log(`Transaction has been evaluated, result is: ${blockchainsResult2.toString()}`);
 
     } catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);

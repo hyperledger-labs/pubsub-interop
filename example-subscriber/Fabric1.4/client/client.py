@@ -3,10 +3,9 @@ import sys
 import json
 import urllib.parse
 
-server = "192.168.226.9"
 # Remeber to change hf_server back to the one above
 # when sending a pull request to the public repo
-# server = "localhost"
+server = "localhost"
 port = "8880"
 
 # Register and enroll new user in organization
@@ -141,8 +140,6 @@ def initialize_network():
     return token1, token2
 
 if __name__ == "__main__":
-    # username = sys.argv[1]
-    # org = sys.argv[2]
     orgLower = org.lower()
     channelName = "mychannel"
 
