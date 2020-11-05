@@ -20,7 +20,7 @@ var Chaincode = class {
         for (let i = 0; i < topics.length; i++) {
             topics[i].docType = 'topic';
             try {
-                await stub.putState('TOPIC' + i, Buffer.from(JSON.stringify(topics[i])));
+                await stub.putState(`${i}`, Buffer.from(JSON.stringify(topics[i])));
             } catch (err) {
                 return shim.error(err);
             }
@@ -55,7 +55,7 @@ var Chaincode = class {
         console.info('============= START : Create topic ===========');
         
         let topicID = args[0];
-        let topicAsBytes = await stub.getState("TOPIC" + topicID);
+        let topicAsBytes = await stub.getState(topicID);
         if (topicAsBytes && topicAsBytes.length != 0) {
             throw new Error(`Topic ${topicID} already exists`);
         }
@@ -68,7 +68,7 @@ var Chaincode = class {
             message,
         };
 
-        await stub.putState('TOPIC'+ topicID, Buffer.from(JSON.stringify(topic)));
+        await stub.putState(topicID, Buffer.from(JSON.stringify(topic)));
         console.info('============= END : Create topic ===========');
     }
 

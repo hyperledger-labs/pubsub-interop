@@ -76,6 +76,11 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
+      # Increase the concurrency limit for endorser
+      - CORE_PEER_LIMITS_CONCURRENCY_ENDORSERSERVICE=30000
+      - CORE_PEER_LIMITS_CONCURRENCY_DELIVERSERVICE=30000
+      # Increase execute timeout
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
     volumes:
         - /var/run/:/host/var/run/
         - ../organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp:/etc/hyperledger/fabric/msp
@@ -116,6 +121,11 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.example.com:9051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.example.com:9051
       - CORE_PEER_LOCALMSPID=Org2MSP
+      # Increase the concurrency limit for endorser
+      - CORE_PEER_LIMITS_CONCURRENCY_ENDORSERSERVICE=30000
+      - CORE_PEER_LIMITS_CONCURRENCY_DELIVERSERVICE=30000
+      # Increase execute timeout
+      - CORE_CHAINCODE_EXECUTETIMEOUT=999999
     volumes:
         - /var/run/:/host/var/run/
         - ../organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp:/etc/hyperledger/fabric/msp

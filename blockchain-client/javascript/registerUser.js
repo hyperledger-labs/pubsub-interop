@@ -4,7 +4,7 @@
 
 'use strict';
 
-// const { Wallets } = require('fabric-network');
+// Using fabric-network version 1.4.8 to which is the latest supported by Caliper
 const FabricCAServices = require('fabric-ca-client');
 const {FileSystemWallet, Gateway} = require('fabric-network');
 const fs = require('fs');
@@ -22,12 +22,10 @@ async function main() {
 
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
-        // const wallet = await Wallets.newFileSystemWallet(walletPath);
         const wallet = new FileSystemWallet(walletPath)
         console.log(`Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
-        // const userIdentity = await wallet.get('appUser');
         const userIdentity = await wallet.exists('appUser');
         if (userIdentity) {
             console.log('An identity for the user "appUser" already exists in the wallet');
@@ -35,7 +33,6 @@ async function main() {
         }
 
         // Check to see if we've already enrolled the admin user.
-        // const adminIdentity = await wallet.get('admin');
         const adminIdentity = await wallet.exists('admin');
         if (!adminIdentity) {
             console.log('An identity for the admin user "admin" does not exist in the wallet');
@@ -43,13 +40,10 @@ async function main() {
             return;
         }
 
-        // build a user object for authenticating with the CA
-        // const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
-        // const adminUser = await provider.getUserContext(adminIdentity, 'admin');
-
         // Create a new gateway for connecting to our peer node.
         const gateway = new Gateway();
         await gateway.connect(ccp, { wallet, identity: 'admin' });
+
         // Get the CA client object from the gateway for interacting with the CA.
         const adminUser = gateway.getCurrentIdentity();
 
@@ -63,15 +57,6 @@ async function main() {
             enrollmentID: 'appUser',
             enrollmentSecret: secret
         });
-        // const x509Identity = {
-        //     credentials: {
-        //         certificate: enrollment.certificate,
-        //         privateKey: enrollment.key.toBytes(),
-        //     },
-        //     mspId: 'Org1MSP',
-        //     type: 'X.509',
-        // };
-        // await wallet.put('appUser', x509Identity);
 
         const x509Identity = {
             certificate: enrollment.certificate,

@@ -4,6 +4,7 @@
 
 'use strict';
 
+// Using fabric-network version 1.4.8 to which is the latest supported by Caliper
 const { Gateway, FileSystemWallet } = require('fabric-network');
 const fs = require('fs');
 const path = require('path');
@@ -16,12 +17,10 @@ async function main() {
 
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
-        // const wallet = await Wallets.newFileSystemWallet(walletPath);
         const wallet = new FileSystemWallet(walletPath)
         console.log(`Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
-        // const identity = await wallet.get('appUser');
         const identity = await wallet.exists('appUser');
         if (!identity) {
             console.log('An identity for the user "appUser" does not exist in the wallet');
@@ -40,15 +39,18 @@ async function main() {
         const brokerContract = network.getContract('broker');
         const blockchainContract = network.getContract('pubsub');
 
-        // Submit the specified transaction.
-        // createCar transaction - requires 5 argument, ex: ('createCar', 'CAR12', 'Honda', 'Accord', 'Black', 'Tom')
-        // changeCarOwner transaction - requires 2 args , ex: ('changeCarOwner', 'CAR12', 'Dave')
-        // await contract.submitTransaction('createTopic', 'TOPIC3', 'temp2', 'jo', 'jojo');
-        // await contract.submitTransaction('publishToTopic', 'TOPIC0', 'Test Message!');
-        await brokerContract.submitTransaction('publishToTopic', 'TOPIC0', 'Invoking publish through broker Message!1');
-        // await brokerContract.submitTransaction('subscribeToTopic', 'TOPIC0', 'BLOCKCHAIN110');
-        // await blockchainContract.submitTransaction('createBlockchain', 'BLOCKCHAIN1', 'Test', 'Test', 
-        // 'Test', 'Test', 'Test', 'Test', 'Test' ,'Test', 'Test', 'Test', 'Test');
+        // Submit the specified transaction to broker chaincode.
+        // createTopic transaction - requires 5 args, ex: ('createTopic', 'BLOCKCHAIN0_0', 'FirstTopic', 'BLOCKCHAIN0', 'BLOCKCHAIN1', 'Initial message.')
+        // publishToTopic transaction - requires 2 args , ex: ('publishToTopic', 'BLOCKCHAIN0_0', 'New message!')
+        // subscribeToTopic transaction - requires 2 args, ex: ('subscribeToTopic', 'BLOCKCHAIN0_0', 'BLOCKCHAIN0')
+        // unsubscribeFromTopic transaction - requires 2 args, ex: ('unsubscribeFromTopic', 'BLOCKCHAIN0_0', 'BLOCKCHAIN0')
+        // unsubscribeFromAllTopics transaction - requires 1 args, ex: ('unsubscribeFromAllTopics', 'BLOCKCHAIN0')
+
+        await brokerContract.submitTransaction('createTopic', 'BLOCKCHAIN0_0', 'FirstTopic', 'BLOCKCHAIN0', 'BLOCKCHAIN1', 'Initial message.');
+        await brokerContract.submitTransaction('publishToTopic', 'BLOCKCHAIN0_0', 'New message!');
+        await brokerContract.submitTransaction('subscribeToTopic', 'BLOCKCHAIN0_0', 'BLOCKCHAIN0');
+        await brokerContract.submitTransaction('unsubscribeFromTopic', 'BLOCKCHAIN0_0', 'BLOCKCHAIN0');
+        await brokerContract.submitTransaction('unsubscribeFromAllTopics', 'BLOCKCHAIN0');
         console.log('Transaction has been submitted');
 
         // Disconnect from the gateway.

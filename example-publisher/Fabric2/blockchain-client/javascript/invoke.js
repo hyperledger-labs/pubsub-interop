@@ -37,14 +37,12 @@ async function main() {
         // Get the contract from the network.
         const topicsContract = network.getContract('topics');
 
-        // Submit the specified transaction.
-        // createCar transaction - requires 5 argument, ex: ('createCar', 'CAR12', 'Honda', 'Accord', 'Black', 'Tom')
-        // changeCarOwner transaction - requires 2 args , ex: ('changeCarOwner', 'CAR12', 'Dave')
-        // await contract.submitTransaction('createTopic', 'TOPIC3', 'temp2', 'jo', 'jojo');
-        // await contract.submitTransaction('publishToTopic', 'TOPIC0', 'Test Message!');
-        await topicsContract.submitTransaction('publishToTopic', 'TOPIC0', 'Invoking publish from publisher through broker Message!');
-        // await blockchainContract.submitTransaction('createBlockchain', 'BLOCKCHAIN1', 'Test', 'Test', 
-        // 'Test', 'Test', 'Test', 'Test', 'Test' ,'Test', 'Test', 'Test', 'Test');
+        // Submit the specified transaction to the topics smart contract.
+        // createTopic transaction - requires 3 argument, ex: ('createTopic', '0', 'FirstTopic', 'Initial message!')
+        // publishToTopic transaction - requires 2 args , ex: ('changeCarOwner', '0', 'New message!')
+
+        await contract.submitTransaction('createTopic', '0', 'FirstTopic', 'Initial message!');
+        await topicsContract.submitTransaction('publishToTopic', '0', 'New message!');
         console.log('Transaction has been submitted');
 
         // Disconnect from the gateway.

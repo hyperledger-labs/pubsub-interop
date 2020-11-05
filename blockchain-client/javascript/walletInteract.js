@@ -1,13 +1,11 @@
-// const { Gateway, Wallets } = require('fabric-network');
+// Using fabric-network version 1.4.8 to which is the latest supported by Caliper
 const {FileSystemWallet} = require('fabric-network');
 const path = require('path');
 
 async function main() {
     try{
         const walletPath = path.join(process.cwd(), 'wallet');
-        // const wallet = await Wallets.newFileSystemWallet(walletPath);
         const wallet = new FileSystemWallet(walletPath)
-        // await wallet.remove('admin.Org1');
         const identities = await wallet.list();
 
         console.log(identities)
