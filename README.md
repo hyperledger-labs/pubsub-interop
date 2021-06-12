@@ -1,5 +1,7 @@
 # A Publish/Subscribe based Blockchain Interoperability Solution
 
+[Paper available here](https://arxiv.org/abs/2101.12331)
+
 In this project, the goal is to implement a messaging broker blockchain that can be used by other blockchains to interoperate. 
 
 In the current implementation, a broker blockchain is implemented as a smart contract in Hyperledger Fabric V2.0. Also, two example subscribers and an example publisher network have been implemented for testing the broker. A Hyperledger Fabric V1.4 and a Hyperledger Besu network have been implemeneted as subscribers and a Hyperledger Fabric V2.0 has been implemented as a publisher. In other words, this platform enables interoperability through a broker for Hyperledger Fabric V2.0 and V1.4 as well as Hyperledger Besu. 
